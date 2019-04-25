@@ -1,8 +1,7 @@
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import NMF
-from sklearn.cluster import KMeans
+from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 from nltk.stem.snowball import EnglishStemmer
 from nltk.corpus import stopwords
@@ -14,11 +13,13 @@ import matplotlib.pyplot as plt
 
 class TopicExtractor:
     topicWords = []
+    bible = []
 
     def __init__(self, no_components, no_words):
+        self.readBible()
         self.getTopicWords(no_components, no_words)
 
-    def getTopicWords(self, no_components, no_words):
+    def readBible(self):
         stopWords = set(stopwords.words('english'))
 
 
@@ -47,22 +48,26 @@ class TopicExtractor:
                 for verse in chapter:
                     whole_bible.append(verse)
 
+        self.bible = whole_bible
 
+
+        
+
+    def getTopicWords(self, no_components, no_words):
         tfidf_vect = TfidfVectorizer()
-        tfidf = tfidf_vect.fit_transform(whole_bible)
+        tfidf = tfidf_vect.fit_transform(self.bible)
 
-        nmf = NMF(n_components=no_components, random_state=1, alpha=.1,
-                l1_ratio=.5, init='nndsvd').fit(tfidf)
+        model = LatentDirichletAllocation(n_components=no_components, random_state=1).fit(tfidf)
 
         allTopicWords = []
 
-        for topic_idx, topic in enumerate(nmf.components_):
+        for topic_idx, topic in enumerate(model.components_):
             allTopicWords.append(" ".join([tfidf_vect.get_feature_names()[i]
                                     for i in topic.argsort()[:-no_words - 1:-1]]).split())
 
         self.topicWords = allTopicWords
 
-t = TopicExtractor(10,20)
+t = TopicExtractor(8,10)
 
 for line in t.topicWords:
     print(line)
