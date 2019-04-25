@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 from nltk.stem.snowball import EnglishStemmer
+from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import nltk
 import re
@@ -21,6 +22,9 @@ class TopicExtractor:
 
     def readBible(self):
         stopWords = set(stopwords.words('english'))
+        lemmatizer = WordNetLemmatizer()
+
+        manualStopWords = ["god", "lord"]
 
 
         raw = ET.parse('NIV.xml')
@@ -34,9 +38,9 @@ class TopicExtractor:
                 for verse in chapter.getchildren():
                     text = ''
                     for word in verse.text.split(' '):
-                        w = word.lower()
-                        if w not in stopWords:
-                            text += w+' '
+                        w = lemmatizer.lemmatize(word.lower())
+                        if w not in stopWords and w not in manualStopWords:
+                            text += w +' '
                     v.append(text)
 
                 b.append(v)
@@ -67,7 +71,7 @@ class TopicExtractor:
 
         self.topicWords = allTopicWords
 
-t = TopicExtractor(8,10)
+t = TopicExtractor(15,10)
 
 for line in t.topicWords:
     print(line)
