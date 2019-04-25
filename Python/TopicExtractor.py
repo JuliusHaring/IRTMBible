@@ -1,6 +1,6 @@
 
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 from nltk.stem.snowball import EnglishStemmer
@@ -54,15 +54,15 @@ class TopicExtractor:
         
 
     def getTopicWords(self, no_components, no_words):
-        tfidf_vect = TfidfVectorizer()
-        tfidf = tfidf_vect.fit_transform(self.bible)
+        c_vect = CountVectorizer()
+        counts = c_vect.fit_transform(self.bible)
 
-        model = LatentDirichletAllocation(n_components=no_components, random_state=1).fit(tfidf)
+        model = LatentDirichletAllocation(n_components=no_components, random_state=1).fit(counts)
 
         allTopicWords = []
 
-        for topic_idx, topic in enumerate(model.components_):
-            allTopicWords.append(" ".join([tfidf_vect.get_feature_names()[i]
+        for _, topic in enumerate(model.components_):
+            allTopicWords.append(" ".join([c_vect.get_feature_names()[i]
                                     for i in topic.argsort()[:-no_words - 1:-1]]).split())
 
         self.topicWords = allTopicWords
