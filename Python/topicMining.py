@@ -12,47 +12,56 @@ import os
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
-stopWords = set(stopwords.words('english'))
-raw = ET.parse('NIV.xml')
-root = raw.getroot()
-books = []
+class TopicExtractor:
+    topicWords = []
 
-for book in root.getchildren():
-    b = []
-    for chapter in book.getchildren():
-        v = []
-        for verse in chapter.getchildren():
-            text = ''
-            for word in verse.text.split(' '):
-                w = word.lower()
-                if w not in stopWords:
-                    text += w+' '
-            v.append(text)
+    def __init__(self):
+        self.getTopicWords(10)
 
-        b.append(v)
-    books.append(b)
+    def getTopicWords(self, no_components):
+        stopWords = set(stopwords.words('english'))
 
-whole_bible = []
-for book in books:
-        for chapter in book:
+
+        raw = ET.parse('NIV.xml')
+        root = raw.getroot()
+        books = []
+
+        for book in root.getchildren():
+            b = []
+            for chapter in book.getchildren():
+                v = []
+                for verse in chapter.getchildren():
+                    text = ''
+                    for word in verse.text.split(' '):
+                        w = word.lower()
+                        if w not in stopWords:
+                            text += w+' '
+                    v.append(text)
+
+                b.append(v)
+            books.append(b)
+
+        whole_bible = []
+        for book in books:
+            for chapter in book:
                 for verse in chapter:
-                        whole_bible.append(verse)
+                    whole_bible.append(verse)
 
 
-tfidf_vect = TfidfVectorizer()
-tfidf = tfidf_vect.fit_transform(whole_bible)
-print(tfidf_vect.get_feature_names())
+        tfidf_vect = TfidfVectorizer()
+        tfidf = tfidf_vect.fit_transform(whole_bible)
 
-nmf = NMF(n_components=10, random_state=1, alpha=.1,
-          l1_ratio=.5, init='nndsvd').fit(tfidf)
+        nmf = NMF(n_components=no_components, random_state=1, alpha=.1,
+                l1_ratio=.5, init='nndsvd').fit(tfidf)
 
+        allTopicWords = []
 
-def display_topics(model, feature_names, no_top_words):
-    for topic_idx, topic in enumerate(model.components_):
-        print("Topic %d:" % (topic_idx))
-        print(" ".join([feature_names[i]
-                        for i in topic.argsort()[:-no_top_words - 1:-1]]))
+        for topic_idx, topic in enumerate(nmf.components_):
+            allTopicWords.append(" ".join([tfidf_vect.get_feature_names()[i]
+                                    for i in topic.argsort()[:-no_components - 1:-1]]).split())
 
+        self.topicWords = allTopicWords
 
-no_top_words = 10
-display_topics(nmf, tfidf_vect.get_feature_names(), no_top_words)
+t = TopicExtractor()
+
+print(t.topicWords)
