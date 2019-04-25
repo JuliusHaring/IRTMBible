@@ -15,10 +15,10 @@ import matplotlib.pyplot as plt
 class TopicExtractor:
     topicWords = []
 
-    def __init__(self):
-        self.getTopicWords(10)
+    def __init__(self, no_components, no_words):
+        self.getTopicWords(no_components, no_words)
 
-    def getTopicWords(self, no_components):
+    def getTopicWords(self, no_components, no_words):
         stopWords = set(stopwords.words('english'))
 
 
@@ -58,10 +58,11 @@ class TopicExtractor:
 
         for topic_idx, topic in enumerate(nmf.components_):
             allTopicWords.append(" ".join([tfidf_vect.get_feature_names()[i]
-                                    for i in topic.argsort()[:-no_components - 1:-1]]).split())
+                                    for i in topic.argsort()[:-no_words - 1:-1]]).split())
 
         self.topicWords = allTopicWords
 
-t = TopicExtractor()
+t = TopicExtractor(10,20)
 
-print(t.topicWords)
+for line in t.topicWords:
+    print(line)
