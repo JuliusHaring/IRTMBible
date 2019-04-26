@@ -1,9 +1,11 @@
 from TopicExtractor import TopicExtractor
+from nltk import word_tokenize
+from nltk import pos_tag as pos_tag
 
 te = TopicExtractor()
 
 testaments = ["",""]
-books = te.books
+books = te.getFullTextBooks()
 
 for i in range(len(books)):
     book = books[i]
@@ -14,4 +16,8 @@ for i in range(len(books)):
             else:
                 testaments[1] = testaments[1] + sentence + "\n "
 
-print(testaments)
+tagged = []
+tagged.append(pos_tag(word_tokenize(testaments[0])))
+tagged.append(pos_tag(word_tokenize(testaments[1])))
+
+print(tagged)

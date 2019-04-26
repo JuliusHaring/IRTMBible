@@ -54,6 +54,30 @@ class TopicExtractor:
         self.bible = whole_bible
         self.books = books
 
+    def getFullTextBooks(self):
+        raw = ET.parse('NIV.xml')
+        root = raw.getroot()
+        books = []
+
+        for book in root.getchildren():
+            b = []
+            for chapter in book.getchildren():
+                v = []
+                for verse in chapter.getchildren():
+                    text = ''
+                    for word in verse.text.split(' '):
+                        text += word
+                    v.append(text)              
+                b.append(v)
+            books.append(b)
+
+        whole_bible = []
+        for book in books:
+            for chapter in book:
+                for verse in chapter:
+                    whole_bible.append(verse)
+            
+        return whole_bible
         
 
     def getTopicWords(self, no_components, no_words):
