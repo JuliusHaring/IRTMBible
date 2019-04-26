@@ -16,14 +16,14 @@ class TopicExtractor:
     topicWords = []
     bible = []
     books = []
+    book_names = []
 
     stopWords = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
     manualStopWords = ["god", "lord"]
 
-    def __init__(self, no_components, no_words):
+    def __init__(self):
         self.readBible()
-        self.getTopicWords(no_components, no_words)
 
     def readBible(self):
         raw = ET.parse('NIV.xml')
@@ -40,10 +40,10 @@ class TopicExtractor:
                         w = self.lemmatizer.lemmatize(word.lower())
                         if w not in self.stopWords and w not in self.manualStopWords:
                             text += w +' '
-                    v.append(text)
-
+                    v.append(text)              
                 b.append(v)
             books.append(b)
+            self.book_names.append(book.attrib['n'])
 
         whole_bible = []
         for book in books:
@@ -69,8 +69,3 @@ class TopicExtractor:
                                     for i in topic.argsort()[:-no_words - 1:-1]]).split())
 
         self.topicWords = allTopicWords
-
-t = TopicExtractor(15,10)
-
-for line in t.topicWords:
-    print(line)
