@@ -15,18 +15,17 @@ import matplotlib.pyplot as plt
 class TopicExtractor:
     topicWords = []
     bible = []
+    books = []
+
+    stopWords = set(stopwords.words('english'))
+    lemmatizer = WordNetLemmatizer()
+    manualStopWords = ["god", "lord"]
 
     def __init__(self, no_components, no_words):
         self.readBible()
         self.getTopicWords(no_components, no_words)
 
     def readBible(self):
-        stopWords = set(stopwords.words('english'))
-        lemmatizer = WordNetLemmatizer()
-
-        manualStopWords = ["god", "lord"]
-
-
         raw = ET.parse('NIV.xml')
         root = raw.getroot()
         books = []
@@ -38,8 +37,8 @@ class TopicExtractor:
                 for verse in chapter.getchildren():
                     text = ''
                     for word in verse.text.split(' '):
-                        w = lemmatizer.lemmatize(word.lower())
-                        if w not in stopWords and w not in manualStopWords:
+                        w = self.lemmatizer.lemmatize(word.lower())
+                        if w not in self.stopWords and w not in self.manualStopWords:
                             text += w +' '
                     v.append(text)
 
@@ -53,7 +52,7 @@ class TopicExtractor:
                     whole_bible.append(verse)
 
         self.bible = whole_bible
-
+        self.books = books
 
         
 
