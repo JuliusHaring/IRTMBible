@@ -89,12 +89,19 @@ class TopicExtractor:
         allTopicWords = []
 
         for topic_idx, topic in enumerate(model.components_):
-            print ("Topic %d:" % (topic_idx))
-            print (" ".join([tfidf_feature_names[i]
-                for i in topic.argsort()[:-no_words - 1:-1]]))
+            topicWords = [tfidf_feature_names[i] for i in topic.argsort()[:-no_words - 1:-1]]
+
+            topicWordsScores = []
+
+            for word in topicWords:
+                wordScore = topic[np.where(np.array(tfidf_feature_names)==word)][0]
+                topicWordsScores.append((word, wordScore))
+
+
+            allTopicWords.append(topicWordsScores)
         
         return allTopicWords
 
 
 t = TopicExtractor()
-t.getTopicWords(10,20)
+print(t.getTopicWords(10,300))
