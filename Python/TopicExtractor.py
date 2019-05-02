@@ -1,7 +1,7 @@
 
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import NMF
 import numpy as np
 from nltk.stem.snowball import EnglishStemmer
 from nltk.stem import WordNetLemmatizer
@@ -20,7 +20,7 @@ class TopicExtractor:
 
     stopWords = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
-    manualStopWords = ["god", "lord"]
+    manualStopWords = []
 
     def __init__(self):
         self.readBible()
@@ -78,18 +78,23 @@ class TopicExtractor:
                     whole_bible.append(verse)
             
         return whole_bible
-        
 
     def getTopicWords(self, no_components, no_words):
-        c_vect = CountVectorizer()
-        counts = c_vect.fit_transform(self.bible)
+        tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
+        tfidf = tfidf_vectorizer.fit_transform(self.bible)
+        tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 
-        model = LatentDirichletAllocation(n_components=no_components, random_state=1).fit(counts)
+        model = NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(tfidf)
 
         allTopicWords = []
 
-        for _, topic in enumerate(model.components_):
-            allTopicWords.append(" ".join([c_vect.get_feature_names()[i]
-                                    for i in topic.argsort()[:-no_words - 1:-1]]).split())
+        for topic_idx, topic in enumerate(model.components_):
+            print ("Topic %d:" % (topic_idx))
+            print (" ".join([tfidf_feature_names[i]
+                for i in topic.argsort()[:-no_words - 1:-1]]))
+        
+        return allTopicWords
 
-        self.topicWords = allTopicWords
+
+t = TopicExtractor()
+t.getTopicWords(10,20)
