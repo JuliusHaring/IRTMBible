@@ -1,16 +1,9 @@
-
-import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF
 import numpy as np
-from nltk.stem.snowball import EnglishStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
-import nltk
-import re
-import os
 import xml.etree.ElementTree as ET
-import matplotlib.pyplot as plt
 
 class TopicExtractor:
     topicWords = []
@@ -104,4 +97,6 @@ class TopicExtractor:
 
 
 t = TopicExtractor()
-print(t.getTopicWords(10,300))
+#print(t.getTopicWords(10,10))
+# Access List 0, Item 0, TuppleItem 0 (name)
+#print(t.getTopicWords(10,10)[0][0][0])
