@@ -61,13 +61,7 @@ class TopicExtractor:
                 b.append(v)
             books.append(b)
 
-        whole_bible = []
-        for book in books:
-            for chapter in book:
-                for verse in chapter:
-                    whole_bible.append(verse)
-            
-        return whole_bible
+        return books
 
     def getTopicWords(self, no_components, no_words):
         tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
