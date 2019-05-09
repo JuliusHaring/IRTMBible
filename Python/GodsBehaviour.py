@@ -5,6 +5,7 @@ from nltk.chunk import RegexpParser
 from nltk.stem import WordNetLemmatizer
 from collections import Counter, OrderedDict
 import matplotlib.pyplot as plt
+import xlsxwriter as xls
 
 te = TopicExtractor()
 
@@ -25,6 +26,7 @@ grammar = "Chunk: {<NNP><VB.?>}"
 parser = RegexpParser(grammar)
 
 verbs = [[],[]]
+words = []
 
 for t in range(len(tagged)):
     for sentence in tagged[t]:
@@ -34,15 +36,20 @@ for t in range(len(tagged)):
                     verb = str(subtree[1][0]).lower()
                     verb = WordNetLemmatizer().lemmatize(verb,'v')
                     verbs[t].append(verb)
+                    if verb not in words:
+                        words.append(verb)
 
 
-old_testament_counts = Counter(verbs[0]).most_common()
-new_testament_counts = Counter(verbs[1]).most_common()
+old_testament_counts = dict(Counter(verbs[0]).most_common())
+new_testament_counts = dict(Counter(verbs[1]).most_common())
 
-def plot(D):
-    plt.bar(range(len(D)), list(D.values()), align='center')
-    plt.xticks(range(len(D)), list(D.keys()))
-    plt.show()
+workbook = xls.Workbook('godsbehaviour.xlsx')
+worksheet = workbook.add_worksheet()
 
-plot(old_testament_counts)
-plot(new_testament_counts)
+for i in range(len(words)):
+    word = words[i]
+    worksheet.write(i,0,word)
+    worksheet.write(i,1, old_testament_counts.get(word))
+    worksheet.write(i,2, new_testament_counts.get(word))
+
+workbook.close()
