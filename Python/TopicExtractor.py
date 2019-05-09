@@ -57,10 +57,7 @@ class TopicExtractor:
             for chapter in book.getchildren():
                 v = []
                 for verse in chapter.getchildren():
-                    text = ''
-                    for word in verse.text.split(' '):
-                        text += word
-                    v.append(text)              
+                    v.append(verse.text)              
                 b.append(v)
             books.append(b)
 
