@@ -3,6 +3,8 @@ from nltk import word_tokenize
 from nltk import pos_tag as pos_tag
 from nltk.chunk import RegexpParser
 from nltk.stem import WordNetLemmatizer
+from collections import Counter, OrderedDict
+import matplotlib.pyplot as plt
 
 te = TopicExtractor()
 
@@ -29,9 +31,18 @@ for t in range(len(tagged)):
         temp = parser.parse(sentence)
         for subtree in temp.subtrees(filter=lambda t: t.label() == 'Chunk'):
                 if(str(subtree[0][0]).lower() == "god"):
-                    verb = subtree[1][0]
+                    verb = str(subtree[1][0]).lower()
                     verb = WordNetLemmatizer().lemmatize(verb,'v')
                     verbs[t].append(verb)
 
 
-p = verbs
+old_testament_counts = Counter(verbs[0]).most_common()
+new_testament_counts = Counter(verbs[1]).most_common()
+
+def plot(D):
+    plt.bar(range(len(D)), list(D.values()), align='center')
+    plt.xticks(range(len(D)), list(D.keys()))
+    plt.show()
+
+plot(old_testament_counts)
+plot(new_testament_counts)
