@@ -1,4 +1,5 @@
 from TopicExtractor import TopicExtractor
+import csv
 import numpy as np
 import string
 
@@ -20,9 +21,12 @@ tmpTopics = np.unique(tmpTopics)
 print(tmpTopics)
 
 bookDictionaries = []
+bookCounter = 1
 
 for book in books:
     dictionary = dict((item, 0) for item in tmpTopics)
+    dictionary['timeOfBook'] = 'book' + str(bookCounter)
+    bookCounter += 1
 
     for chapter in book:
 
@@ -37,3 +41,15 @@ for book in books:
 
 
 print(bookDictionaries)
+tmpTopics = np.append(tmpTopics, 'timeOfBook')
+csv_columns = tmpTopics
+
+csv_file = "TopicOccurencesPerBook.csv"
+try:
+    with open(csv_file, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+        writer.writeheader()
+        for data in bookDictionaries:
+            writer.writerow(data)
+except IOError:
+    print("I/O error")
