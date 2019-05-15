@@ -21,11 +21,11 @@ tmpTopics = np.unique(tmpTopics)
 print(tmpTopics)
 
 bookDictionaries = []
-bookCounter = 1
+bookCounter = 1990
 
 for book in books:
     dictionary = dict((item, 0) for item in tmpTopics)
-    dictionary['timeOfBook'] = 'book' + str(bookCounter)
+    dictionary['timeOfBook'] = bookCounter
     bookCounter += 1
 
     for chapter in book:
@@ -42,7 +42,7 @@ for book in books:
 
 print(bookDictionaries)
 tmpTopics = np.append(tmpTopics, 'timeOfBook')
-csv_columns = tmpTopics
+csv_columns = ['word', 'value', 'year']
 
 csv_file = "TopicOccurencesPerBook.csv"
 try:
@@ -50,6 +50,15 @@ try:
         writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
         writer.writeheader()
         for data in bookDictionaries:
-            writer.writerow(data)
+            #print(data)
+            #writer.writerow(data)
+            timeOfBook = data['timeOfBook']
+            for item in data:
+                #print(item)
+                #print(data[item])
+                if not item == 'timeOfBook':
+                    dicti = {'word': item, 'value': data[item], 'year': timeOfBook}
+                    writer.writerow(dicti)
+
 except IOError:
     print("I/O error")
