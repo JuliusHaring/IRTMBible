@@ -44,18 +44,14 @@ print(bookDictionaries)
 tmpTopics = np.append(tmpTopics, 'timeOfBook')
 csv_columns = ['word', 'value', 'year']
 
-csv_file = "TopicOccurencesPerBook.csv"
+csv_file = "../R/TopicOccurencesPerBook.csv"
 try:
     with open(csv_file, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
         writer.writeheader()
         for data in bookDictionaries:
-            #print(data)
-            #writer.writerow(data)
             timeOfBook = data['timeOfBook']
             for item in data:
-                #print(item)
-                #print(data[item])
                 if not item == 'timeOfBook':
                     dicti = {'word': item, 'value': data[item], 'year': timeOfBook}
                     writer.writerow(dicti)
