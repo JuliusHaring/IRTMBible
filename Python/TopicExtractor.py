@@ -87,6 +87,13 @@ class TopicExtractor:
         return allTopicWords
 
 
+    def getRawNMF(self,no_components):
+        tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
+        tfidf = tfidf_vectorizer.fit_transform(self.bible)
+        tfidf_feature_names = tfidf_vectorizer.get_feature_names()
+
+        return = NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(tfidf)
+
 t = TopicExtractor()
 #print(t.getTopicWords(10,10))
 # Access List 0, Item 0, TuppleItem 0 (name)
