@@ -5,6 +5,10 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import xml.etree.ElementTree as ET
 
+from sklearn.preprocessing import Normalizer
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import make_pipeline
+
 class TopicExtractor:
     topicWords = []
     bible = []
