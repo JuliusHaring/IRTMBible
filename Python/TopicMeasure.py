@@ -5,7 +5,7 @@ from TopicExtractor import TopicExtractor
 te = TopicExtractor()
 
 topicCollection=[]
-for i in [10,20,30,40,50,60,70,80,90,100]:
+for i in [10,20,30,40,50,60,70,80,90,100,200]:
     topicCollection.append((i,te.getRawNMF(i)))
 
 scores=[]
@@ -19,4 +19,4 @@ for i, t in topicCollection:
     scores.append((i,score))
     
 
-test = scores
+print(scores)
