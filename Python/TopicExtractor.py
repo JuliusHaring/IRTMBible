@@ -92,7 +92,7 @@ class TopicExtractor:
         tfidf = tfidf_vectorizer.fit_transform(self.bible)
         tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 
-        return NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(tfidf)
+        return NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd'), tfidf
 
 t = TopicExtractor()
 #print(t.getTopicWords(10,10))
