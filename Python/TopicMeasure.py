@@ -4,19 +4,31 @@ from TopicExtractor import TopicExtractor
 
 te = TopicExtractor()
 
-topicCollection=[]
-for i in [10,20,30,40,50,60,70,80,90,100,200]:
-    topicCollection.append((i,te.getRawNMF(i)))
+topicCollectionNMF=[]
+topicCollectionLDA=[]
+for i in [10,20]:
+    topicCollectionLDA.append((i,te.getRawLDA(i)))
+    topicCollectionNMF.append((i,te.getRawNMF(i)))
 
-scores=[]
+scoresNMF=[]
+scoresLDA=[]
 
-for i, t in topicCollection:
-    nmf, tfidf = t
+for i, t in topicCollectionNMF:
+    nmf, rep = t
     model = nmf
-    W = model.fit_transform(tfidf)
+    W = model.fit_transform(rep)
     labels = W.argmax(axis=1)
-    score = silhouette_score(tfidf, labels)
-    scores.append((i,score))
+    score = silhouette_score(rep, labels)
+    scoresNMF.append((i,score))
     
+for i, t in topicCollectionLDA:
+    nmf, rep = t
+    model = nmf
+    W = model.fit_transform(rep)
+    labels = W.argmax(axis=1)
+    score = silhouette_score(rep, labels)
+    scoresLDA.append((i,score))
 
-print(scores)
+
+print(scoresNMF)
+print(scoresLDA)

@@ -1,5 +1,5 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import NMF
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import NMF, LatentDirichletAllocation
 import numpy as np
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -90,6 +90,30 @@ class TopicExtractor:
         
         return allTopicWords
 
+    def getTopicWordsLDA(self, no_components, no_words):
+        count_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
+        count = count_vectorizer.fit_transform(self.bible)
+        count_feature_names = count_vectorizer.get_feature_names()
+
+        model = LatentDirichletAllocation(n_topics=no_components, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(count)
+
+
+        allTopicWords = []
+
+        for topic_idx, topic in enumerate(model.components_):
+            topicWords = [count_feature_names[i] for i in topic.argsort()[:-no_words - 1:-1]]
+
+            topicWordsScores = []
+
+            for word in topicWords:
+                wordScore = topic[np.where(np.array(count_feature_names)==word)][0]
+                topicWordsScores.append((word, wordScore))
+
+
+            allTopicWords.append(topicWordsScores)
+        
+        return allTopicWords
+
 
     def getRawNMF(self,no_components):
         tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
@@ -98,7 +122,14 @@ class TopicExtractor:
 
         return NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd'), tfidf
 
-t = TopicExtractor()
+    def getRawLDA(self,no_components):
+        count_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
+        count = count_vectorizer.fit_transform(self.bible)
+        count_feature_names = count_vectorizer.get_feature_names()
+
+        return LatentDirichletAllocation(n_topics=no_components, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(count), count
+
+
 #print(t.getTopicWords(10,10))
 # Access List 0, Item 0, TuppleItem 0 (name)
 #print(t.getTopicWords(10,10)[0][0][0])
