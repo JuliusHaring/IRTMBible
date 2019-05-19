@@ -3,9 +3,9 @@ import csv
 
 te = TopicExtractor()
 
-indices = [10,20,30,40,50,60,70,80,90,100]
-n_top_words = 10
-how_many = 2 #len(indices)
+indices = [5,10,20,30,40,50,60,70,80,90,100]
+n_top_words = 30
+how_many = len(indices)
 
 topicsNMF = []
 topicsLDA = []
@@ -53,15 +53,14 @@ def ADSD(k_topics):
         
         calc = calc/(r*(r-1))
 
-        ADSDs.append((k,calc))
+        ADSDs.append(calc)
     return ADSDs
 
 metrics_LDA = ADSD(topicsLDA)
 metrics_NMF = ADSD(topicsNMF)
 
-csv_file = "../R/TopicMetrics.csv"
+csv_file = "../R/TopicMetrics+"n_top_words"+.csv"
 with open(csv_file, 'w') as csvfile:
     writer = csv.writer(csvfile)
     for i in range(len(indices[:how_many])):
-        writer.writerow(indices[i], metrics_LDA[i], metrics_NMF[i])
-    writer.close()
+        writer.writerow([indices[i], metrics_LDA[i], metrics_NMF[i]])
