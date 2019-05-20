@@ -20,6 +20,6 @@ for i in range(len(topicCollectionLDA)):
     topicLDA = topicCollectionLDA[i][1]
     scoresLDA.append(getCohModel(topicLDA[0],topicLDA[1], topicLDA[2]))
     topicNMF = topicCollectionNMF[i][1]
-    scoresLDA.append(getCohModel(topicNMF[0],topicNMF[1], topicNMF[2]))
+    scoresNMF.append(getCohModel(topicNMF[0],topicNMF[1], topicNMF[2]))
 
 x = 0
