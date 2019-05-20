@@ -16,6 +16,7 @@ class TopicExtractor:
     topicWords = []
     bible = []
     books = []
+    booksSentences = []
     book_names = []
 
     stopWords = set(stopwords.words('english'))
@@ -43,6 +44,21 @@ class TopicExtractor:
                     v.append(text)              
                 b.append(v)
             books.append(b)
+            self.book_names.append(book.attrib['n'])
+
+        for book in root.getchildren():
+            b = []
+            for chapter in book.getchildren():
+                v = []
+                for verse in chapter.getchildren():
+                    text = ""
+                    for word in verse.text.split(' '):
+                        w = self.lemmatizer.lemmatize(word.lower())
+                        if w not in self.stopWords and w not in self.manualStopWords:
+                            text = w+" "
+                    v.append(text)              
+                b.append(v)
+            booksSentences.append(b)
             self.book_names.append(book.attrib['n'])
 
         whole_bible = []
