@@ -3,7 +3,7 @@ import pandas as pd
 import csv
 
 te = TopicExtractor()
-no_topics = 10
+no_topics = 20
 
 books = te.getFullTextBooks()
 topics = te.getTopicWords(no_topics,10)
