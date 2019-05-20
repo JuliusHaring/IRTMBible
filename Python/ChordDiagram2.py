@@ -2,7 +2,7 @@ from TopicExtractor import TopicExtractor
 import csv
 
 te = TopicExtractor()
-no_topics = 10
+no_topics = 20
 
 topics = te.getTopicWords(no_topics,10)
 
@@ -31,7 +31,7 @@ for i in range(len(topics)):
         topicj = topics[j]
         counts[i][j] = findCoOccurances(toWords(topici),toWords(topicj))
 
-csv_file = "../R/TopicOccurencesPerTestament.csv"
+csv_file = "../R/TopicOccurencesPerTestament2.csv"
 with open(csv_file, 'w') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerows(counts)
