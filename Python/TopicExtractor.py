@@ -83,21 +83,17 @@ class TopicExtractor:
     def getTopicWords(self, no_components, no_words):
         model = self.getRawNMF(no_components)[0]
 
-        df = []
-        word_dict = {}
+        ret = []
         for i in range(no_components):
             words = model.show_topic(i, topn = no_words)
-            word_dict['Topic # ' + '{:02d}'.format(i+1)] = [i[0] for i in words]
-        df = pd.DataFrame(word_dict)
-        return df
+            ret.append(words)
+        return ret
 
     def getTopicWordsLDA(self, no_components, no_words):
         model = self.getRawLDA(no_components)[0]
 
-        df = []
-        word_dict = {}
+        ret = []
         for i in range(no_components):
             words = model.show_topic(i, topn = no_words)
-            word_dict['Topic # ' + '{:02d}'.format(i+1)] = [i[0] for i in words]
-        df = pd.DataFrame(word_dict)
-        return df
+            ret.append(words)
+        return ret
