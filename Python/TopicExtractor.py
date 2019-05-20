@@ -30,6 +30,7 @@ class TopicExtractor:
         raw = ET.parse('NIV.xml')
         root = raw.getroot()
         books = []
+        booksSentences = []
 
         for book in root.getchildren():
             b = []
@@ -69,6 +70,7 @@ class TopicExtractor:
 
         self.bible = whole_bible
         self.books = books
+        self.booksSentences = booksSentences
 
     def getFullTextBooks(self):
         raw = ET.parse('NIV.xml')
