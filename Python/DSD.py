@@ -59,7 +59,7 @@ def ADSD(k_topics):
 metrics_LDA = ADSD(topicsLDA)
 metrics_NMF = ADSD(topicsNMF)
 
-csv_file = "../R/TopicMetrics"+n_top_words+".csv"
+csv_file = "../R/TopicMetrics"+str(n_top_words)+".csv"
 with open(csv_file, 'w') as csvfile:
     writer = csv.writer(csvfile)
     for i in range(len(indices[:how_many])):
