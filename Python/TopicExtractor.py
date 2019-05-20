@@ -1,13 +1,16 @@
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.decomposition import NMF, LatentDirichletAllocation
 import numpy as np
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import xml.etree.ElementTree as ET
+import pandas as pd
 
-from sklearn.preprocessing import Normalizer
-from sklearn.decomposition import TruncatedSVD
-from sklearn.pipeline import make_pipeline
+
+from gensim.corpora.dictionary import Dictionary
+from gensim.models.nmf import Nmf
+from gensim.models.ldamodel import LdaModel
+import spacy
+from spacy.lang.en import English
+parser = English
 
 class TopicExtractor:
     topicWords = []
@@ -32,11 +35,11 @@ class TopicExtractor:
             for chapter in book.getchildren():
                 v = []
                 for verse in chapter.getchildren():
-                    text = ''
+                    text = []
                     for word in verse.text.split(' '):
                         w = self.lemmatizer.lemmatize(word.lower())
                         if w not in self.stopWords and w not in self.manualStopWords:
-                            text += w +' '
+                            text.append(w)
                     v.append(text)              
                 b.append(v)
             books.append(b)
@@ -68,68 +71,31 @@ class TopicExtractor:
         return books
 
     def getTopicWords(self, no_components, no_words):
-        tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
-        tfidf = tfidf_vectorizer.fit_transform(self.bible)
-        tfidf_feature_names = tfidf_vectorizer.get_feature_names()
+        common_dictionary = Dictionary(self.bible)
+        common_corpus = [common_dictionary.doc2bow(text) for text in self.bible]
+        model = Nmf(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary)
 
-        model = NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd').fit(tfidf)
-
-        allTopicWords = []
-
-        for topic_idx, topic in enumerate(model.components_):
-            topicWords = [tfidf_feature_names[i] for i in topic.argsort()[:-no_words - 1:-1]]
-
-            topicWordsScores = []
-
-            for word in topicWords:
-                wordScore = topic[np.where(np.array(tfidf_feature_names)==word)][0]
-                topicWordsScores.append((word, wordScore))
-
-
-            allTopicWords.append(topicWordsScores)
-        
-        return allTopicWords
+        df = []
+        word_dict = {}
+        for i in range(no_components):
+            words = model.show_topic(i, topn = no_words)
+            word_dict['Topic # ' + '{:02d}'.format(i+1)] = [i[0] for i in words]
+        df = pd.DataFrame(word_dict)
+        return df
 
     def getTopicWordsLDA(self, no_components, no_words):
-        count_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
-        count = count_vectorizer.fit_transform(self.bible)
-        count_feature_names = count_vectorizer.get_feature_names()
+        common_dictionary = Dictionary(self.bible)
+        common_corpus = [common_dictionary.doc2bow(text) for text in self.bible]
+        model = LdaModel(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary)
 
-        model = LatentDirichletAllocation(n_topics=no_components, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(count)
+        df = []
+        word_dict = {}
+        for i in range(no_components):
+            words = model.show_topic(i, topn = no_words)
+            word_dict['Topic # ' + '{:02d}'.format(i+1)] = [i[0] for i in words]
+        df = pd.DataFrame(word_dict)
+        return df
 
+t = TopicExtractor()
 
-        allTopicWords = []
-
-        for topic_idx, topic in enumerate(model.components_):
-            topicWords = [count_feature_names[i] for i in topic.argsort()[:-no_words - 1:-1]]
-
-            topicWordsScores = []
-
-            for word in topicWords:
-                wordScore = topic[np.where(np.array(count_feature_names)==word)][0]
-                topicWordsScores.append((word, wordScore))
-
-
-            allTopicWords.append(topicWordsScores)
-        
-        return allTopicWords
-
-
-    def getRawNMF(self,no_components):
-        tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
-        tfidf = tfidf_vectorizer.fit_transform(self.bible)
-        tfidf_feature_names = tfidf_vectorizer.get_feature_names()
-
-        return NMF(n_components=no_components, random_state=1, alpha=.1, l1_ratio=.5, init='nndsvd'), tfidf
-
-    def getRawLDA(self,no_components):
-        count_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
-        count = count_vectorizer.fit_transform(self.bible)
-        count_feature_names = count_vectorizer.get_feature_names()
-
-        return LatentDirichletAllocation(n_topics=no_components, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(count), count
-
-
-#print(t.getTopicWords(10,10))
-# Access List 0, Item 0, TuppleItem 0 (name)
-#print(t.getTopicWords(10,10)[0][0][0])
+print(t.getTopicWordsLDA(10,10))
