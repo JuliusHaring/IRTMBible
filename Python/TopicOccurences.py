@@ -5,9 +5,9 @@ import string
 
 TE = TopicExtractor()
 
-books = TE.books
+books = TE.booksSentences
 
-topics = TE.getTopicWords(10, 10)
+topics = TE.getTopicWords(20, 10)
 
 tmpTopics = []
 

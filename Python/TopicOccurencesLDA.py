@@ -7,7 +7,7 @@ TE = TopicExtractor()
 
 books = TE.books
 
-topics = TE.getTopicWordsLDA(10, 10)
+topics = TE.getTopicWordsLDA(20, 10)
 
 tmpTopics = []
 
