@@ -70,10 +70,18 @@ class TopicExtractor:
 
         return books
 
-    def getTopicWords(self, no_components, no_words):
+    def getRawNMF(self,no_components):
         common_dictionary = Dictionary(self.bible)
         common_corpus = [common_dictionary.doc2bow(text) for text in self.bible]
-        model = Nmf(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary)
+        return (Nmf(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary), common_corpus, common_dictionary)
+
+    def getRawLDA(self,no_components):
+        common_dictionary = Dictionary(self.bible)
+        common_corpus = [common_dictionary.doc2bow(text) for text in self.bible]
+        return (LdaModel(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary), common_corpus, common_dictionary)
+
+    def getTopicWords(self, no_components, no_words):
+        model = self.getRawNMF(no_components)[0]
 
         df = []
         word_dict = {}
@@ -84,9 +92,7 @@ class TopicExtractor:
         return df
 
     def getTopicWordsLDA(self, no_components, no_words):
-        common_dictionary = Dictionary(self.bible)
-        common_corpus = [common_dictionary.doc2bow(text) for text in self.bible]
-        model = LdaModel(common_corpus,num_topics=no_components, random_state=1, id2word=common_dictionary)
+        model = self.getRawLDA(no_components)[0]
 
         df = []
         word_dict = {}
@@ -95,8 +101,3 @@ class TopicExtractor:
             word_dict['Topic # ' + '{:02d}'.format(i+1)] = [i[0] for i in words]
         df = pd.DataFrame(word_dict)
         return df
-
-t = TopicExtractor()
-
-print(t.getTopicWords(10,10))
-print(t.getTopicWordsLDA(10,10))
