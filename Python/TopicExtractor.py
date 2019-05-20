@@ -98,4 +98,5 @@ class TopicExtractor:
 
 t = TopicExtractor()
 
+print(t.getTopicWords(10,10))
 print(t.getTopicWordsLDA(10,10))
